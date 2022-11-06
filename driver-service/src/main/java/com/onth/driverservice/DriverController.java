@@ -1,6 +1,7 @@
 package com.onth.driverservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/drivers")
 public class DriverController {
     
+    //resilience4j
+    private static final String Service_Driver = "serviceDriver";
+
     private final RestServiceUtil customRestServiceUtil;
     private final IDriverService driverService;
 
@@ -24,7 +30,8 @@ public class DriverController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<DriverDto> getDriver(@PathVariable int id) {
+    @CircuitBreaker(name = Service_Driver, fallbackMethod = "serviceError")
+    public ResponseEntity<?> getDriver(@PathVariable int id) {
         DriverEntity entity = driverService.getDriverById(id);
         CustomerDto res = customRestServiceUtil.getCustomer(entity.getCustomerId());
         DriverDto result = new DriverDto();
@@ -34,5 +41,9 @@ public class DriverController {
         result.setName(entity.getName());
         result.setPrice(entity.getPrice());
         return ResponseEntity.ok().body(result);
+    }
+
+    public ResponseEntity<String> serviceError(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Service Error!");
     }
 }

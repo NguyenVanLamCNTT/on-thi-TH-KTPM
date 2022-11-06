@@ -27,8 +27,7 @@ public class RestServiceUtil {
 
     public CustomerDto getCustomer(int customerId) {
         
-        try {
-            RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
             List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();        
             MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();  
             converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));        
@@ -40,10 +39,6 @@ public class RestServiceUtil {
             ResponseEntity<CustomerDto> res = restTemplate.exchange("http://localhost:8090/api/customers/" + customerId, HttpMethod.GET, requestBody, CustomerDto.class);
 
             return res.getBody();
-        }catch(Exception error) {
-            error.printStackTrace();
-            return null;
-        }
     }
 
 
