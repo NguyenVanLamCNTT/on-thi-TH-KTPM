@@ -1,5 +1,7 @@
 package com.onth.driverservice;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +11,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "drivers")
-public class DriverEntity {
+public class DriverEntity implements Serializable{
+
+    private static final long serialVersionUID = 946828114981498610L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

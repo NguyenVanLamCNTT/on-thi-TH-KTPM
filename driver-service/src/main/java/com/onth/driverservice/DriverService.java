@@ -1,5 +1,5 @@
 package com.onth.driverservice;
-
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,9 +10,11 @@ public class DriverService implements IDriverService{
     public DriverService(DriverRepository driverRepository) {
         this.driverRepository = driverRepository;
     }
+    
     @Override
-    public DriverEntity getDriverById(int id) {
-        return driverRepository.findById(id).get();
+    @Cacheable(value = "driver", key = "#driverId")
+    public DriverEntity getDriverById(int driverId) {
+        return driverRepository.findById(driverId).get();
     }
     
 }

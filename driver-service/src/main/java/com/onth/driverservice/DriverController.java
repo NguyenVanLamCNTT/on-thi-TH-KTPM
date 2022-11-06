@@ -1,6 +1,7 @@
 package com.onth.driverservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,10 +30,10 @@ public class DriverController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{driverId}")
     @CircuitBreaker(name = Service_Driver, fallbackMethod = "serviceError")
-    public ResponseEntity<?> getDriver(@PathVariable int id) {
-        DriverEntity entity = driverService.getDriverById(id);
+    public ResponseEntity<?> getDriver(@PathVariable int driverId) {
+        DriverEntity entity = driverService.getDriverById(driverId);
         CustomerDto res = customRestServiceUtil.getCustomer(entity.getCustomerId());
         DriverDto result = new DriverDto();
         result.setDriverId(entity.getDriverId());
@@ -44,6 +45,7 @@ public class DriverController {
     }
 
     public ResponseEntity<String> serviceError(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Service Error!");
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.toString());
     }
 }
